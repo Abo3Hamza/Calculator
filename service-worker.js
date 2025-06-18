@@ -1,12 +1,12 @@
 const CACHE_NAME = 'calculator-pwa-v1';
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/service-worker.js',
-  '/icons/icon-192.png',
-  '/icons/icon-512.png'
-  // أضف هنا المسارات لأي ملفات CSS أو JS أو صور مستخدمة إضافية
+  '/Calculator/',
+  '/Calculator/index.html',
+  '/Calculator/manifest.json',
+  '/Calculator/service-worker.js',
+  '/Calculator/icons/icon-192.png',
+  '/Calculator/icons/icon-512.png'
+  // ضع هنا أي ملفات أخرى تستخدمها لو في
 ];
 
 self.addEventListener('install', event => {
