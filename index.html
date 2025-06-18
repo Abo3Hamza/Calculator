@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>آلة حاسبة متقدمة</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2a2a3d">
+    <style>
+        * {
+            box-sizing: border-box;
+            outline: none;
+        }
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background-color: #1e1e2f;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: white;
+            overflow: hidden;
+        }
+        .calculator {
+            display: flex;
+            flex-direction: column;
+            width: 100vw;
+            height: 100vh;
+            background-color: #2a2a3d;
+            padding: 20px;
+            gap: 10px;
+            box-sizing: border-box;
+        }
+        .display {
+            background-color: #3a3a5a;
+            border: none;
+            border-radius: 10px;
+            padding: 15px;
+            font-size: 2em;
+            text-align: right;
+            color: white;
+            height: 200px;
+            resize: none;
+        }
+        .button-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        .main-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            flex-grow: 1;
+        }
+        .advanced-buttons-container {
+            overflow: hidden;
+            transition: max-height 0.4s ease-out;
+            max-height: 0;
+        }
+        .advanced-buttons {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            gap: 10px;
+            padding-bottom: 10px;
+        }
+        .advanced-buttons button {
+            flex: 0 0 auto;
+            min-width: 80px;
+            scroll-snap-align: start;
+        }
+        .show.advanced-buttons-container {
+            max-height: 200px;
+        }
+        button {
+            padding: 15px;
+            font-size: 1.1em;
+            border-radius: 15px;
+            border: none;
+            cursor: pointer;
+            background-color: #4a4a6a;
+            color: white;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background-color: #5a5a7a;
+        }
+        .operator {
+            background-color: #ff9800;
+            color: white;
+        }
+        .equal {
+            background-color: #4caf50;
+            color: white;
+            grid-column: span 2;
+        }
+        .clear, .delete {
+            background-color: #e53935;
+            color: white;
+        }
+        .toggle-btn {
+            background-color: #00bcd4;
+            color: white;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+<div class="calculator">
+    <input type="text" class="display" id="display" readonly />
+
+    <div class="advanced-buttons-container" id="advancedButtons">
+        <div class="advanced-buttons" id="advancedButtonList">
+            <button onclick="appendMath('Math.sin(toRadians(', '))')">sin</button>
+            <button onclick="appendMath('Math.cos(toRadians(', '))')">cos</button>
+            <button onclick="appendMath('Math.tan(toRadians(', '))')">tan</button>
+            <button onclick="appendMath('Math.asin(toDegrees(', '))')">asin</button>
+            <button onclick="appendMath('Math.acos(toDegrees(', '))')">acos</button>
+            <button onclick="appendMath('Math.atan(toDegrees(', '))')">atan</button>
+            <button onclick="appendValue('Math.sqrt(')">√</button>
+            <button onclick="appendValue('Math.log10(')">log</button>
+            <button onclick="appendValue('Math.log(')">ln</button>
+            <button onclick="appendValue('Math.abs(')">|x|</button>
+            <button onclick="appendValue('Math.pow(')">pow</button>
+            <button onclick="appendValue('factorial(')">!</button>
+        </div>
+    </div>
+
+    <div class="button-row">
+        <button onclick="clearDisplay()" class="clear">AC</button>
+        <button onclick="toggleAdvanced()" class="toggle-btn">المزيد ▼</button>
+        <button onclick="deleteLast()" class="delete">⌫</button>
+    </div>
+
+    <div class="main-buttons">
+        <button onclick="appendValue('/')" class="operator">÷</button>
+        <button onclick="appendValue('(')">(</button>
+        <button onclick="appendValue(')')">)</button>
+        <button onclick="appendValue('%')">%</button>
+
+        <button onclick="appendValue('+')" class="operator">+</button>
+        <button onclick="appendValue('7')">7</button>
+        <button onclick="appendValue('8')">8</button>
+        <button onclick="appendValue('9')">9</button>
+
+        <button onclick="appendValue('-')" class="operator">−</button>
+        <button onclick="appendValue('4')">4</button>
+        <button onclick="appendValue('5')">5</button>
+        <button onclick="appendValue('6')">6</button>
+
+        <button onclick="appendValue('*')" class="operator">×</button>
+        <button onclick="appendValue('1')">1</button>
+        <button onclick="appendValue('2')">2</button>
+        <button onclick="appendValue('3')">3</button>
+
+        <button onclick="calculate()" class="equal">=</button>
+        <button onclick="appendValue('0')">0</button>
+        <button onclick="appendValue('.')">.</button>
+    </div>
+
+</div>
+
+<script>
+    const display = document.getElementById("display");
+    const advancedContainer = document.getElementById("advancedButtons");
+
+    function appendValue(value) { display.value += value; }
+
+    function clearDisplay() { display.value = ''; }
+
+    function deleteLast() { display.value = display.value.slice(0, -1); }
+
+    function calculate() {
+        try {
+            let result = eval(display.value.replace(/factorial\((\d+)\)/g, (_, n) => factorial(parseInt(n))));
+            display.value = result;
+        } catch (error) {
+            display.value = 'خطأ';
+        }
+    }
+
+    function toggleAdvanced() {
+        advancedContainer.classList.toggle('show');
+    }
+
+    function toRadians(degrees) {
+        return degrees * Math.PI / 180;
+    }
+
+    function toDegrees(radians) {
+        return radians * 180 / Math.PI;
+    }
+
+    function factorial(n) {
+        if (n === 0 || n === 1) return 1;
+        if (n < 0) return NaN;
+        let res = 1;
+        for (let i = 2; i <= n; i++) res *= i;
+        return res;
+    }
+
+    function appendMath(prefix, suffix) {
+        display.value += prefix + suffix;
+    }
+
+    // Swipe Detection على قائمة الازرار المتقدمة
+    let startX = 0;
+    const advancedList = document.getElementById('advancedButtonList');
+
+    advancedList.addEventListener('touchstart', e => {
+        startX = e.touches[0].clientX;
+    });
+
+    advancedList.addEventListener('touchend', e => {
+        const endX = e.changedTouches[0].clientX;
+        if (Math.abs(endX - startX) > 50) toggleAdvanced();
+    });
+
+    // PWA: تسجيل Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('service-worker.js');
+      });
+    }
+</script>
+</body>
+</html>
